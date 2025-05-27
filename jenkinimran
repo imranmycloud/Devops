@@ -27,6 +27,15 @@ pipeline {
             }
            }
         }
+ stage('Package Sample Application') {
+            steps {
+                dir('/var/lib/jenkins/workspace/test/addressbook/addressbook_main'){
+                withSonarQubeEnv(credentialsId:'Sonarqube-tocken',installationName:'Sonar-Qube-server'){
+                sh "$/var/lib/jenkins/workspace/test/apache-maven-3.9.4/bin/mvn clean verify sonar:sonar  -Dsonar.projectKey=test_project   -Dsonar.projectName='test_project'"
+                }
+            }
+           }
+        }
 
 
     }
