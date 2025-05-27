@@ -1,47 +1,56 @@
 pipeline {
     agent any
 
+    environment {
+        mavenHome = "${env.WORKSPACE}/apache-maven-3.9.4"
+    }
+
     stages {
-          stage('Checkout code') {
-              steps {
-                  checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/imranmycloud/Devops.git']])
-              }
-          }
-  stage('Install Maven Build Tool') {
+        stage('Checkout code') {
+            steps {
+                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/imranmycloud/Devops.git']])
+            }
+        }
+
+        stage('Install Maven Build Tool') {
             steps { 
                 sh 'wget https://dlcdn.apache.org/maven/maven-3/3.9.4/binaries/apache-maven-3.9.4-bin.tar.gz'
-                sh 'tar -xzvf /var/lib/jenkins/workspace/test/apache-maven-3.9.4-bin.tar.gz'
-             } 
-           }
- stage('Compile Sample Application') {
-            steps {
-                dir('/var/lib/jenkins/workspace/test/addressbook/addressbook_main'){
-                sh '/var/lib/jenkins/workspace/test/apache-maven-3.9.4/bin/mvn compile'
-            }
-           }
+                sh 'tar -xzvf apache-maven-3.9.4-bin.tar.gz'
+            } 
         }
- stage('Test Sample Application') {
+
+        stage('Compile Sample Application') {
             steps {
-                dir('/var/lib/jenkins/workspace/test/addressbook/addressbook_main'){
-                sh '/var/lib/jenkins/workspace/test/apache-maven-3.9.4/bin/mvn test'
-            }
-           }
-        }
- stage('Package Sample Application') {
-            steps {
-                dir('/var/lib/jenkins/workspace/test/addressbook/addressbook_main'){
-                sh '/var/lib/jenkins/workspace/test/apache-maven-3.9.4/bin/mvn package'
-            }
-           }
-        }
- stage('Package Sample Application') {
-            steps {
-                dir('/var/lib/jenkins/workspace/test/addressbook/addressbook_main'){
-                withSonarQubeEnv(credentialsId:'Sonarqube-tocken',installationName:'Sonar-Qube-server'){
-                sh "$/var/lib/jenkins/workspace/test/apache-maven-3.9.4/bin/mvn clean verify sonar:sonar  -Dsonar.projectKey=test_project   -Dsonar.projectName='test_project'"
+                dir("${env.WORKSPACE}/addressbook/addressbook_main") {
+                    sh "${mavenHome}/bin/mvn compile"
                 }
             }
-           }
+        }
+
+        stage('Test Sample Application') {
+            steps {
+                dir("${env.WORKSPACE}/addressbook/addressbook_main") {
+                    sh "${mavenHome}/bin/mvn test"
+                }
+            }
+        }
+
+        stage('Package Sample Application') {
+            steps {
+                dir("${env.WORKSPACE}/addressbook/addressbook_main") {
+                    sh "${mavenHome}/bin/mvn package"
+                }
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                dir("${env.WORKSPACE}/addressbook/addressbook_main") {
+                    withSonarQubeEnv(credentialsId: 'Sonarqube-token', installationName: 'Sonar-Qube-server') {
+                        sh "${mavenHome}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=test_project -Dsonar.projectName=test_project"
+                    }
+                }
+            }
         }
     }
 }
