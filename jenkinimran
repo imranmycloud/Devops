@@ -13,5 +13,12 @@ pipeline {
                 sh 'tar -xzvf /var/lib/jenkins/workspace/test/apache-maven-3.9.4-bin.tar.gz'
              } 
            }
+ stage('Compile Sample Application') {
+            steps {
+                dir('/var/lib/jenkins/workspace/test/addressbook/addressbook_main'){
+                sh '/var/lib/jenkins/workspace/test/apache-maven-3.9.4/bin/mvn compile'
+            }
+           }
+        }
     }
 }
