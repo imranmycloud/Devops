@@ -43,6 +43,13 @@ pipeline {
             }
            }
         }
+ stage('Nexus Artifact Upload') {
+            steps {
+                dir('/var/lib/jenkins/workspace/test/addressbook/addressbook_main/target'){
+             nexusArtifactUploader artifacts: [[artifactId: 'testartifactid', classifier: '', file: 'adressbook.war', type: 'war']], credentialsId: 'nexus-credentialss', groupId: 'com.test.app', nexusUrl: '107.23.191.105:8081', nexusVersion: 'nexus3', protocol: 'http', repository: 'testreponexus', version: '2.1.1-SNAPSHOT'
+            }
+           }
+        }
 
 
     }
