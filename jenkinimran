@@ -65,13 +65,12 @@ pipeline {
            }
         }
         stage('Building image') {
-            steps {
-                dir('/var/lib/jenkins/workspace/test/addressbook/addressbook_main')
-                script {
-                 dockerImage = docker.build "${IMAGE_REPO_NAME}:${IMAGE_TAG}"
-                }
-            }
+    steps {
+        script {
+            dockerImage = docker.build("${IMAGE_REPO_NAME}:${IMAGE_TAG}", "addressbook/addressbook_main")
         }
+    }
+}
         stage('Pushing to ECR') {
             steps {
             dir('/var/lib/jenkins/workspace/test/addressbook/addressbook_main')
