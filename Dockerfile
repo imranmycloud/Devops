@@ -14,13 +14,7 @@ RUN mvn clean package -DskipTests
 FROM eclipse-temurin:17-jdk
 
 # Set the working directory
-WORKDIR /app
+WORKDIR /var/lib/jenkins/workspace/test/addressbook/addressbook_main
 
 # Copy the built jar from the builder stage
-COPY --from=builder /app/target/bookstore-*.jar /app/bookstore.jar
-
-# Expose the port (default Vaadin port is 8080)
-EXPOSE 8080
-
-#  Run the application
-CMD ["java", "-jar", "/app/bookstore.jar"]
+COPY --from=builder /var/lib/jenkins/workspace/test/addressbook/addressbook_main/target/addressbook.war /app/addressbook.war
