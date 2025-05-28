@@ -67,6 +67,7 @@ pipeline {
         stage('Building image') {
     steps {
         script {
+             dir('/var/lib/jenkins/workspace/test/addressbook/addressbook_main')
             dockerImage = docker.build("${IMAGE_REPO_NAME}:${IMAGE_TAG}", "addressbook/addressbook_main")
         }
     }
