@@ -22,5 +22,5 @@ COPY --from=builder /app/target/bookstore-*.jar /app/bookstore.jar
 # Expose the port (default Vaadin port is 8080)
 EXPOSE 8080
 
-# Run the application
+#  Run the application
 CMD ["java", "-jar", "/app/bookstore.jar"]
