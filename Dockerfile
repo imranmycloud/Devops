@@ -1,14 +1,24 @@
-# Use Eclipse Temurin JDK image as base
-FROM eclipse-temurin:17-jdk
+# Use Maven to build the project
+FROM maven:3.9.6-eclipse-temurin-17 AS builder
 
-# Set working directory inside the container
 WORKDIR /app
 
-# Copy the WAR file into the container (adjust the source path if needed)
-COPY /var/lib/jenkins/workspace/test/addressbook/addressbook_main/target/addressbook.war /app/addressbook.war
+# Copy the whole project into Docker (clone the repo manually or in Jenkins first)
+COPY . .
 
-# Expose the port the app will run on (adjust if needed)
+# Build the WAR file
+RUN mvn clean package -DskipTests
+
+# Use a JDK runtime to run the app
+FROM eclipse-temurin:17-jdk
+
+WORKDIR /app
+
+# Copy the WAR file from the builder stage
+COPY --from=builder /app/target/bookstore-*.war /app/bookstore.war
+
+# Expose port 8080
 EXPOSE 8080
 
-# Run the WAR file with Java
-CMD ["java", "-jar", "/app/addressbook.war"]
+# Run the application
+CMD ["java", "-jar", "/app/bookstore.war"]
